@@ -47,7 +47,7 @@ class RegisterDosenController extends Controller
         }
 
         // Buat data dosen dengan status pending
-        Dosen::create([
+        $dosen = Dosen::create([
             'user_id'             => $user->id,
             'prodi_id'            => $request->prodi_id,
             'nama'                => $request->nama,

@@ -32,7 +32,7 @@ class PendaftaranController extends Controller
             'dosen_id'         => $dosen->id,
             'no_member'        => $noMember,
             'tanggal_mulai'    => Carbon::today(),
-            'tanggal_berakhir' => Carbon::today()->addYear(),
+            'tanggal_berakhir' => Carbon::today()->addYear(4),
             'status'           => 'aktif',
         ]);
 

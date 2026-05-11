@@ -30,7 +30,7 @@ class RegisterProdiController extends Controller
             'role'     => 'prodi',
         ]);
 
-        Prodi::create([
+        $prodi = Prodi::create([
             'user_id'            => $user->id,
             'nama_prodi'         => $request->nama_prodi,
             'nama_universitas'   => $request->nama_universitas,
