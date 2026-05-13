@@ -178,6 +178,64 @@
                     </table>
                 </div>
             </div>
+
+            {{-- TAMBAHAN BARU: Tabel Daftar Dosen --}}
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                    <span><i class="bi bi-people text-primary"></i> Daftar Dosen Anggota</span>
+                    <span class="badge bg-primary">{{ $dosens->count() }} Orang</span>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0 table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">No</th>
+                                <th>Nama Dosen</th>
+                                <th>NIDN</th>
+                                <th>Status Pendaftaran</th>
+                                <th>Status Member</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($dosens as $index => $d)
+                            <tr>
+                                <td class="ps-3">{{ $index + 1 }}</td>
+                                <td>{{ $d->nama }}</td>
+                                <td>{{ $d->nidn }}</td>
+                                <td>
+                                    @if($d->status_pendaftaran == 'pending')
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    @elseif($d->status_pendaftaran == 'approved')
+                                        <span class="badge bg-success">Disetujui</span>
+                                    @else
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($d->memberDosen)
+                                        @if($d->memberDosen->status == 'aktif')
+                                            <span class="badge bg-success">Aktif (s/d {{ $d->memberDosen->tanggal_berakhir->format('d/m/y') }})</span>
+                                        @else
+                                            <span class="badge bg-danger">Expired</span>
+                                        @endif
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="bi bi-person-x fs-3 d-block mb-2"></i>
+                                    Belum ada dosen yang mendaftar di program studi ini.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             @else
             <div class="card">
                 <div class="card-body text-center py-5">

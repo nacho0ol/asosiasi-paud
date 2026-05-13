@@ -6,7 +6,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Times New Roman', serif; background: white; }
 .piagam { width: 100%; min-height: 190mm; border: 8px double #8B6914; padding: 20px; text-align: center; }
-.inner { border: 2px solid #8B6914; padding: 20px; min-height: 170mm; }
+.inner { border: 2px solid #8B6914; padding: 20px; min-height: 170mm; position: relative; }
 .logo { height: 70px; margin-bottom: 10px; background: white; border-radius: 6px; padding: 4px 10px; object-fit: contain; }
 .org-name { font-size: 18px; font-weight: bold; color: #1a3c5e; text-transform: uppercase; letter-spacing: 2px; }
 .org-sub { font-size: 12px; color: #555; margin-bottom: 15px; }
@@ -18,20 +18,12 @@ body { font-family: 'Times New Roman', serif; background: white; }
 .no-member { font-size: 11px; color: #666; margin: 8px 0; }
 .berlaku { font-size: 11px; color: #333; margin: 5px 0; }
 .tanggal { font-size: 11px; color: #555; margin-top: 10px; }
-.ttd-area { display: table; width: 100%; margin-top: 20px; }
-.ttd-col { display: table-cell; text-align: center; vertical-align: bottom; width: 33%; padding: 0 8px; }
-.ttd-box img.ttd-img { height: 50px; margin-bottom: 2px; }
-.ttd-box .garis { border-top: 1px solid #333; padding-top: 3px; font-size: 11px; font-weight: bold; }
-.ttd-box .jabatan { font-size: 10px; color: #666; }
-.qr-ttd { text-align: center; padding: 4px; border: 1px dashed #8B6914; border-radius: 4px; margin-bottom: 4px; display: inline-block; }
-.qr-ttd table.qr-html { border-collapse: collapse; margin: 0 auto 2px; }
-.qr-ttd table.qr-html td { width: 3px; height: 3px; padding: 0; border: none; }
-.qr-ttd .lbl { font-size: 7px; color: #8B6914; font-style: italic; }
-.qr-dokumen { text-align: center; padding: 4px; }
-.qr-dokumen table.qr-html { border-collapse: collapse; margin: 0 auto 2px; }
-.qr-dokumen table.qr-html td { width: 3px; height: 3px; padding: 0; border: none; }
-.qr-dokumen .lbl { font-size: 8px; color: #888; }
-.hash-val { font-size: 7px; color: #bbb; font-family: monospace; margin-top: 2px; }
+
+/* Layout Footer Baru */
+.footer-area { margin-top: 40px; width: 100%; }
+.barcode-col { float: left; width: 40%; text-align: left; padding-left: 20px; padding-top: 10px; }
+.ttd-col { float: right; width: 40%; text-align: center; padding-right: 20px; }
+.clearfix { clear: both; }
 </style>
 </head>
 <body>
@@ -53,66 +45,48 @@ body { font-family: 'Times New Roman', serif; background: white; }
         </div>
         <div class="no-member">Nomor Anggota: <strong>{{ $memberProdi->no_member }}</strong></div>
         <div class="berlaku">Berlaku: {{ $memberProdi->tanggal_mulai->format('d F Y') }} s/d {{ $memberProdi->tanggal_berakhir->format('d F Y') }}</div>
+        
         <div class="tanggal">Ditetapkan pada tanggal {{ now()->format('d F Y') }}</div>
 
         @php $modeTtd = $setting->mode_ttd ?? 'gambar'; @endphp
 
-        <div class="ttd-area">
-            {{-- Ketua Umum --}}
+        <div class="footer-area">
+            <div class="barcode-col">
+                @php
+                    // Memanfaatkan library yang ada di composer.json tanpa install baru
+                    $options = new \chillerlan\QRCode\QROptions([
+                        'outputType' => \chillerlan\QRCode\QRCode::OUTPUT_BASE64,
+                        'eccLevel' => \chillerlan\QRCode\QRCode::ECC_L,
+                        'scale' => 3,
+                    ]);
+                    $qrCode = (new \chillerlan\QRCode\QRCode($options))->render($memberProdi->no_member);
+                @endphp
+                <img src="{{ $qrCode }}" style="height: 70px; border: 2px solid #8B6914; padding: 2px;">
+                <div style="font-size: 10px; color: #555; margin-top: 4px; font-weight: bold; margin-left: 5px;">
+                    NO: {{ $memberProdi->no_member }}
+                </div>
+            </div>
+
             <div class="ttd-col">
-                <div class="ttd-box">
+                <div style="font-size: 12px; margin-bottom: 5px; font-weight: bold;">Ketua Umum</div>
+
+                <div style="height: 90px; margin: 10px 0;">
+                    @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
+                        <img src="{{ $imgs['cap'] }}" style="height: 85px; opacity: 0.6;">
+                    @endif
+
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
-                    <img class="ttd-img" src="{{ $imgs['ttd_ketua'] }}">
-                    @else
-                    <div style="height:50px"></div>
+                        <img src="{{ $imgs['ttd_ketua'] }}" style="height: 60px; margin-left: -55px; margin-bottom: 12px;">
                     @endif
-                    @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
-                    <img class="ttd-img" src="{{ $imgs['cap'] }}" style="height:35px;opacity:0.75;">
-                    @endif
-                    @if(in_array($modeTtd, ['qr','keduanya']) && $qrKetua)
-                    <div class="qr-ttd">
-                        {!! $qrKetua !!}
-                        <div class="lbl">TTD Digital Ketua Umum</div>
-                    </div>
-                    @endif
-                    <div class="garis">{{ $setting->nama_ketua ?? 'Ketua' }}</div>
-                    <div class="jabatan">Ketua Umum</div>
                 </div>
-            </div>
 
-            {{-- QR Dokumen (tengah) --}}
-            <div class="ttd-col">
-                <div class="qr-dokumen">
-                    {!! $qrDokumen !!}
-                    <div class="lbl">Verifikasi Dokumen</div>
-                    @if($memberProdi->hash_dokumen)
-                    <div class="hash-val">{{ $memberProdi->hash_dokumen }}</div>
-                    @endif
+                <div style="border-top: 1px solid #333; font-weight: bold; font-size: 12px; padding-top: 3px; display: inline-block; min-width: 150px;">
+                    {{ $setting->nama_ketua ?? 'Ketua' }}
                 </div>
             </div>
-
-            {{-- Bendahara --}}
-            <div class="ttd-col">
-                <div class="ttd-box">
-                    @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_bendahara']))
-                    <img class="ttd-img" src="{{ $imgs['ttd_bendahara'] }}">
-                    @else
-                    <div style="height:50px"></div>
-                    @endif
-                    @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
-                    <img class="ttd-img" src="{{ $imgs['cap'] }}" style="height:35px;opacity:0.75;">
-                    @endif
-                    @if(in_array($modeTtd, ['qr','keduanya']) && $qrBendahara)
-                    <div class="qr-ttd">
-                        {!! $qrBendahara !!}
-                        <div class="lbl">TTD Digital Bendahara</div>
-                    </div>
-                    @endif
-                    <div class="garis">{{ $setting->nama_bendahara ?? 'Bendahara' }}</div>
-                    <div class="jabatan">Bendahara</div>
-                </div>
-            </div>
+            <div class="clearfix"></div>
         </div>
+
     </div>
 </div>
 </body>

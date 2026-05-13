@@ -13,6 +13,21 @@ class PortalProdiController extends Controller
         $this->middleware('auth');
     }
 
+    // public function index()
+    // {
+    //     $user    = auth()->user();
+    //     $prodi   = $user->prodi;
+    //     $setting = Setting::first();
+
+    //     if (!$prodi) {
+    //         return redirect()->route('login')->with('error', 'Data prodi tidak ditemukan.');
+    //     }
+
+    //     $member   = $prodi->memberProdi;
+    //     $tagihans = Tagihan::where('jenis', 'prodi')->where('ref_id', $prodi->id)->orderBy('created_at', 'desc')->get();
+
+    //     return view('portal.prodi', compact('prodi', 'member', 'setting', 'tagihans'));
+    // }
     public function index()
     {
         $user    = auth()->user();
@@ -26,7 +41,9 @@ class PortalProdiController extends Controller
         $member   = $prodi->memberProdi;
         $tagihans = Tagihan::where('jenis', 'prodi')->where('ref_id', $prodi->id)->orderBy('created_at', 'desc')->get();
 
-        return view('portal.prodi', compact('prodi', 'member', 'setting', 'tagihans'));
+        $dosens = \App\Models\Dosen::with('memberDosen')->where('prodi_id', $prodi->id)->get();
+
+        return view('portal.prodi', compact('prodi', 'member', 'setting', 'tagihans', 'dosens'));
     }
 
     public function editProfil()
