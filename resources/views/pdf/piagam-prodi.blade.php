@@ -19,11 +19,16 @@ body { font-family: 'Times New Roman', serif; background: white; }
 .berlaku { font-size: 11px; color: #333; margin: 5px 0; }
 .tanggal { font-size: 11px; color: #555; margin-top: 10px; }
 
-/* Layout Footer Baru */
+/* Layout Footer & Barcode CSS */
 .footer-area { margin-top: 40px; width: 100%; }
 .barcode-col { float: left; width: 40%; text-align: left; padding-left: 20px; padding-top: 10px; }
 .ttd-col { float: right; width: 40%; text-align: center; padding-right: 20px; }
 .clearfix { clear: both; }
+
+/* Styling khusus biar Barcode HTML mekar & kelihatan */
+.qr-dokumen-box { display: inline-block; border: 2px solid #8B6914; padding: 6px; background: white; }
+table.qr-html { border-collapse: collapse; margin: 0; }
+table.qr-html td { width: 3.5px !important; height: 3.5px !important; padding: 0 !important; border: none !important; }
 </style>
 </head>
 <body>
@@ -52,17 +57,10 @@ body { font-family: 'Times New Roman', serif; background: white; }
 
         <div class="footer-area">
             <div class="barcode-col">
-                @php
-                    // Memanfaatkan library yang ada di composer.json tanpa install baru
-                    $options = new \chillerlan\QRCode\QROptions([
-                        'outputType' => \chillerlan\QRCode\QRCode::OUTPUT_BASE64,
-                        'eccLevel' => \chillerlan\QRCode\QRCode::ECC_L,
-                        'scale' => 3,
-                    ]);
-                    $qrCode = (new \chillerlan\QRCode\QRCode($options))->render($memberProdi->no_member);
-                @endphp
-                <img src="{{ $qrCode }}" style="height: 70px; border: 2px solid #8B6914; padding: 2px;">
-                <div style="font-size: 10px; color: #555; margin-top: 4px; font-weight: bold; margin-left: 5px;">
+                <div class="qr-dokumen-box">
+                    {!! $qrDokumen !!}
+                </div>
+                <div style="font-size: 10px; color: #555; margin-top: 4px; font-weight: bold; margin-left: 2px;">
                     NO: {{ $memberProdi->no_member }}
                 </div>
             </div>
@@ -70,18 +68,27 @@ body { font-family: 'Times New Roman', serif; background: white; }
             <div class="ttd-col">
                 <div style="font-size: 12px; margin-bottom: 5px; font-weight: bold;">Ketua Umum</div>
 
-                <div style="height: 90px; margin: 10px 0;">
+                {{-- JURUS PAMUNGKAS DOMPDF: LAYERING POSITION ABSOLUTE --}}
+                <div style="position: relative; height: 110px; margin-bottom: 5px;">
+                    
+                    {{-- LAYER 1: CAP (di belakang) --}}
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
-                        <img src="{{ $imgs['cap'] }}" style="height: 85px; opacity: 0.6;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center; z-index: 1;">
+                        <img src="{{ $imgs['cap'] }}" style="height: 95px; opacity: 0.65;">
+                    </div>
                     @endif
 
+                    {{-- LAYER 2: TTD (di depan, agak diturunin dikit biar pas nebas tengah cap) --}}
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
-                        <img src="{{ $imgs['ttd_ketua'] }}" style="height: 60px; margin-left: -55px; margin-bottom: 12px;">
+                    <div style="position: absolute; top: 25px; left: 0; width: 100%; text-align: center; z-index: 2;">
+                        <img src="{{ $imgs['ttd_ketua'] }}" style="height: 75px;">
+                    </div>
                     @endif
+
                 </div>
 
                 <div style="border-top: 1px solid #333; font-weight: bold; font-size: 12px; padding-top: 3px; display: inline-block; min-width: 150px;">
-                    {{ $setting->nama_ketua ?? 'Ketua' }}
+                    {{ $setting->nama_ketua ?? 'Ketua Umum' }}
                 </div>
             </div>
             <div class="clearfix"></div>
