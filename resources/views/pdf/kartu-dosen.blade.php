@@ -40,22 +40,14 @@ body { font-family: Arial, sans-serif; background: white; }
 .sosmed-area { position: absolute; bottom: 3mm; right: 2mm; width: 44mm; font-size: 5pt; color: #555; text-align: right; line-height: 1.8; z-index: 10; }
 .sosmed-area .web { font-weight: bold; color: #1a3c3c; font-size: 5.5pt; }
 
-/* TTD area di bawah kartu */
-.ttd-section { display: table; width: 100%; margin-top: 5mm; }
-.ttd-col { display: table-cell; text-align: center; vertical-align: bottom; width: 33%; padding: 0 3mm; }
+/* TTD area */
 .ttd-box { text-align: center; }
-.ttd-box img.ttd-img { height: 30px; display: block; margin: 0 auto 1mm; }
-.ttd-box img.cap-img { height: 25px; display: block; margin: 0 auto 1mm; opacity: 0.75; }
 .ttd-box .garis { border-top: 1px solid #333; padding-top: 2px; font-size: 7pt; font-weight: bold; }
 .ttd-box .jabatan { font-size: 6pt; color: #666; }
 .qr-ttd { text-align: center; padding: 2px; border: 1px dashed #aaa; border-radius: 2px; margin-bottom: 2px; display: inline-block; }
 .qr-ttd table.qr-html { border-collapse: collapse; margin: 0 auto 1px; }
 .qr-ttd table.qr-html td { width: 2px; height: 2px; padding: 0; border: none; }
 .qr-ttd .lbl { font-size: 5pt; color: #888; font-style: italic; }
-.qr-dokumen-small { text-align: center; }
-.qr-dokumen-small table.qr-html { border-collapse: collapse; margin: 0 auto 1px; }
-.qr-dokumen-small table.qr-html td { width: 2px; height: 2px; padding: 0; border: none; }
-.qr-dokumen-small .lbl { font-size: 5pt; color: #888; }
 </style>
 </head>
 <body>
@@ -64,115 +56,93 @@ body { font-family: Arial, sans-serif; background: white; }
         <div class="label-cell">SISI DEPAN</div>
         <div class="label-cell">SISI BELAKANG</div>
     </div>
-    <div class="row-kartu">
 
+    <div class="row-kartu">
         {{-- SISI DEPAN --}}
         <div class="col-kartu">
-        <div class="kartu">
-            <div class="bg-teal"></div>
-            <div class="acc-gray"></div><div class="acc-brown"></div><div class="acc-yel"></div>
-            <div class="logo-area">
-                @if(!empty($imgs['logo']))
-                <img src="{{ $imgs['logo'] }}" style="height:14mm;object-fit:contain;max-width:34mm;">
-                @endif
-                <div class="org-name">{{ $setting->nama_asosiasi ?? 'Asosiasi Dosen PAUD Indonesia' }}</div>
-                @if($setting && $setting->tagline)
-                <div class="tagline">{{ $setting->tagline }}</div>
-                @endif
+            <div class="kartu">
+                <div class="bg-teal"></div>
+                <div class="acc-gray"></div><div class="acc-brown"></div><div class="acc-yel"></div>
+                <div class="logo-area">
+                    @if(!empty($imgs['logo']))
+                    <img src="{{ $imgs['logo'] }}" style="height:14mm;object-fit:contain;max-width:34mm;">
+                    @endif
+                    <div class="org-name">{{ $setting->nama_asosiasi ?? 'Asosiasi Dosen PAUD Indonesia' }}</div>
+                    @if($setting && $setting->tagline)
+                    <div class="tagline">{{ $setting->tagline }}</div>
+                    @endif
+                </div>
+                <div class="qr-area">
+                    {!! $qrDokumen !!}
+                    <div class="exp" style="font-size:4pt;color:#555;">VERIFIKASI</div>
+                    <div class="exp">EXP. {{ $memberDosen->tanggal_berakhir->format('dmY') }}</div>
+                </div>
+                <div class="website-badge">{{ $setting->website ?? 'www.asosiasi.or.id' }}</div>
             </div>
-            <div class="qr-area">
-                {!! $qrDokumen !!}
-                <div class="exp" style="font-size:4pt;color:#555;">VERIFIKASI</div>
-                <div class="exp">EXP. {{ $memberDosen->tanggal_berakhir->format('dmY') }}</div>
-            </div>
-            <div class="website-badge">{{ $setting->website ?? 'www.asosiasi.or.id' }}</div>
-        </div>
         </div>
 
         {{-- SISI BELAKANG --}}
         <div class="col-kartu">
-        <div class="kartu">
-            <div class="bg-teal-back"></div>
-            <div class="acc-gray-l"></div><div class="acc-brown-l"></div><div class="acc-yel-l"></div>
-            <div class="logo-back">
-                @if(!empty($imgs['logo']))
-                <img src="{{ $imgs['logo'] }}" style="width:14mm;height:14mm;object-fit:contain;">
-                @endif
-                <div class="singkatan">{{ $setting->singkatan ?? 'ADPAUD' }}</div>
-                <div class="label-kartu">KARTU ANGGOTA</div>
-            </div>
-            <div class="info-area">
-                <div class="nama-badge">{{ $memberDosen->dosen->nama }}</div>
-                <div class="no-anggota">Nomor Anggota: {{ $memberDosen->no_member }}</div>
-                <div class="detail-info">
-                    <span class="lbl">NIDN &nbsp;&nbsp;&nbsp;:</span> {{ $memberDosen->dosen->nidn }}<br>
-                    <span class="lbl">Prodi &nbsp;&nbsp;&nbsp;:</span> {{ $memberDosen->dosen->prodi->nama_prodi ?? '-' }}<br>
-                    <span class="lbl">Jabatan :</span> {{ $memberDosen->dosen->jabatan_fungsional ?? '-' }}<br>
-                    <span class="lbl">Berlaku &nbsp;:</span> s/d {{ $memberDosen->tanggal_berakhir->format('d/m/Y') }}
+            <div class="kartu">
+                <div class="bg-teal-back"></div>
+                <div class="acc-gray-l"></div><div class="acc-brown-l"></div><div class="acc-yel-l"></div>
+                <div class="logo-back">
+                    @if(!empty($imgs['logo']))
+                    <img src="{{ $imgs['logo'] }}" style="width:14mm;height:14mm;object-fit:contain;">
+                    @endif
+                    <div class="singkatan">{{ $setting->singkatan ?? 'ADPAUD' }}</div>
+                    <div class="label-kartu">KARTU ANGGOTA</div>
+                </div>
+                <div class="info-area">
+                    <div class="nama-badge">{{ $memberDosen->dosen->nama }}</div>
+                    <div class="no-anggota">Nomor Anggota: {{ $memberDosen->no_member }}</div>
+                    <div class="detail-info">
+                        <span class="lbl">NIDN &nbsp;&nbsp;&nbsp;:</span> {{ $memberDosen->dosen->nidn }}<br>
+                        <span class="lbl">Prodi &nbsp;&nbsp;&nbsp;:</span> {{ $memberDosen->dosen->prodi->nama_prodi ?? '-' }}<br>
+                        <span class="lbl">Jabatan :</span> {{ $memberDosen->dosen->jabatan_fungsional ?? '-' }}<br>
+                        <span class="lbl">Berlaku &nbsp;:</span> s/d {{ $memberDosen->tanggal_berakhir->format('d/m/Y') }}
+                    </div>
+                </div>
+                <div class="sosmed-area">
+                    <div class="web">{{ $setting->website ?? '' }}</div>
+                    @if($setting && $setting->email)<div>{{ $setting->email }}</div>@endif
+                    @if($setting && $setting->instagram)<div>IG: {{ $setting->instagram }}</div>@endif
+                    @if($setting && $setting->facebook)<div>FB: {{ $setting->facebook }}</div>@endif
                 </div>
             </div>
-            <div class="sosmed-area">
-                <div class="web">{{ $setting->website ?? '' }}</div>
-                @if($setting && $setting->email)<div>{{ $setting->email }}</div>@endif
-                @if($setting && $setting->instagram)<div>IG: {{ $setting->instagram }}</div>@endif
-                @if($setting && $setting->facebook)<div>FB: {{ $setting->facebook }}</div>@endif
-            </div>
-        </div>
-        </div>
 
+            {{-- TTD HANYA 1 (KETUA UMUM) DI BAWAH KARTU, DIPERBESAR EXTREME & TUMPANG TINDIH --}}
+            @php $modeTtd = $setting->mode_ttd ?? 'gambar'; @endphp
+            <div style="width: 85.6mm; margin-top: 5mm; text-align: right;">
+                <div class="ttd-box" style="display: inline-block; width: 50mm; text-align: center;">
+                    
+                    {{-- WADAH TTD & CAP OVERLAP DOMPDF --}}
+                    <div style="height: 100px; text-align: center; margin-bottom: 5px;">
+                        
+                        {{-- 1. CAP DIMUNCULKAN DULU (Background), UKURAN JUMBO --}}
+                        @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
+                        <img src="{{ $imgs['cap'] }}" style="height: 95px; opacity: 0.65; display: inline-block;">
+                        @endif
+
+                        {{-- 2. TTD DITARIK KE ATAS PAKAI MARGIN MINUS (Foreground), UKURAN JUMBO --}}
+                        @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
+                        <img src="{{ $imgs['ttd_ketua'] }}" style="height: 75px; display: block; margin: -80px auto 0 auto;">
+                        @endif
+
+                    </div>
+
+                    @if(in_array($modeTtd, ['qr','keduanya']) && $qrKetua)
+                    <div class="qr-ttd" style="margin-top: 5px;">{!! $qrKetua !!}<div class="lbl">TTD Digital Ketua</div></div>
+                    @endif
+                    
+                    <div class="garis" style="margin-top: 5px;">{{ $setting->nama_ketua ?? 'Ketua Umum' }}</div>
+                    <div class="jabatan">Ketua Umum</div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    {{-- TTD AREA DI BAWAH KARTU --}}
-    @php $modeTtd = $setting->mode_ttd ?? 'gambar'; @endphp
-    <div class="ttd-section">
-        {{-- Ketua Umum --}}
-        <div class="ttd-col">
-            <div class="ttd-box">
-                @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
-                <img class="ttd-img" src="{{ $imgs['ttd_ketua'] }}">
-                @endif
-                @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
-                <img class="cap-img" src="{{ $imgs['cap'] }}">
-                @endif
-                @if(in_array($modeTtd, ['qr','keduanya']) && $qrKetua)
-                <div class="qr-ttd">
-                    {!! $qrKetua !!}
-                    <div class="lbl">TTD Digital Ketua</div>
-                </div>
-                @endif
-                <div class="garis">{{ $setting->nama_ketua ?? 'Ketua Umum' }}</div>
-                <div class="jabatan">Ketua Umum</div>
-            </div>
-        </div>
-
-        {{-- QR Verifikasi Dokumen --}}
-        <div class="ttd-col">
-            <div class="qr-dokumen-small">
-                {!! $qrDokumen !!}
-                <div class="lbl">Verifikasi Kartu</div>
-            </div>
-        </div>
-
-        {{-- Bendahara --}}
-        <div class="ttd-col">
-            <div class="ttd-box">
-                @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_bendahara']))
-                <img class="ttd-img" src="{{ $imgs['ttd_bendahara'] }}">
-                @endif
-                @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
-                <img class="cap-img" src="{{ $imgs['cap'] }}">
-                @endif
-                @if(in_array($modeTtd, ['qr','keduanya']) && $qrBendahara)
-                <div class="qr-ttd">
-                    {!! $qrBendahara !!}
-                    <div class="lbl">TTD Digital Bendahara</div>
-                </div>
-                @endif
-                <div class="garis">{{ $setting->nama_bendahara ?? 'Bendahara' }}</div>
-                <div class="jabatan">Bendahara</div>
-            </div>
-        </div>
-    </div>
 </div>
 </body>
 </html>
