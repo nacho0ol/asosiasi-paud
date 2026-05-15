@@ -22,15 +22,29 @@ class PdfController extends Controller
         return realpath($full);
     }
 
+    // private function qrHtml(string $data, int $size = 3): string
+    // {
+    //     $options = new QROptions([
+    //         'outputType' => QRCode::OUTPUT_MARKUP_HTML,
+    //         'eccLevel'   => QRCode::ECC_M,
+    //         'scale'      => $size,
+    //         'cssClass'   => 'qr-html',
+    //     ]);
+    //     return (new QRCode($options))->render($data);
+    // }
+
     private function qrHtml(string $data, int $size = 3): string
     {
         $options = new QROptions([
-            'outputType' => QRCode::OUTPUT_MARKUP_HTML,
-            'eccLevel'   => QRCode::ECC_M,
-            'scale'      => $size,
-            'cssClass'   => 'qr-html',
+            'outputType'  => QRCode::OUTPUT_IMAGE_PNG,
+            'eccLevel'    => QRCode::ECC_M,
+            'scale'       => $size,
+            'imageBase64' => true,
         ]);
-        return (new QRCode($options))->render($data);
+
+        $base64Data = (new QRCode($options))->render($data);
+        return '<img src="' . $base64Data . '" style="width: 100%; height: auto; display: block; margin: 0 auto;">';
+        
     }
 
     private function verifikasiUrl(string $kode, string $tipe = 'dokumen'): string

@@ -105,7 +105,7 @@
 
             <div class="mb-4">
                 <div class="row g-2">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <input type="radio" class="btn-check" name="mode_ttd" id="mode_gambar" value="gambar"
                             {{ old('mode_ttd', $setting->mode_ttd ?? 'gambar') === 'gambar' ? 'checked' : '' }}
                             onchange="toggleModeTtd()">
@@ -115,7 +115,7 @@
                             <small>Upload foto/scan tanda tangan</small>
                         </label>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <input type="radio" class="btn-check" name="mode_ttd" id="mode_qr" value="qr"
                             {{ old('mode_ttd', $setting->mode_ttd ?? 'gambar') === 'qr' ? 'checked' : '' }}
                             onchange="toggleModeTtd()">
@@ -123,16 +123,6 @@
                             <i class="bi bi-qr-code fs-4 d-block mb-1"></i>
                             <strong>TTD Barcode (QR)</strong><br>
                             <small>QR barcode verifikasi digital</small>
-                        </label>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="radio" class="btn-check" name="mode_ttd" id="mode_keduanya" value="keduanya"
-                            {{ old('mode_ttd', $setting->mode_ttd ?? 'gambar') === 'keduanya' ? 'checked' : '' }}
-                            onchange="toggleModeTtd()">
-                        <label class="btn btn-outline-warning w-100 text-start p-3" for="mode_keduanya">
-                            <i class="bi bi-patch-check fs-4 d-block mb-1"></i>
-                            <strong>Gambar + Barcode</strong><br>
-                            <small>TTD gambar &amp; QR verifikasi</small>
                         </label>
                     </div>
                 </div>
@@ -307,16 +297,11 @@ function toggleModeTtd() {
         sQr.style.display = 'none';
         info.className = 'alert alert-primary mt-2 py-2 mb-0';
         info.innerHTML = '<i class="bi bi-pen"></i> Mode <strong>TTD Gambar</strong>: Upload foto/scan tanda tangan ketua dan bendahara.';
-    } else if (mode === 'qr') {
+    } else {
         sGambar.style.display = 'none';
         sQr.style.display = '';
         info.className = 'alert alert-success mt-2 py-2 mb-0';
         info.innerHTML = '<i class="bi bi-qr-code"></i> Mode <strong>TTD Barcode</strong>: QR code verifikasi digital tampil di PDF.';
-    } else {
-        sGambar.style.display = '';
-        sQr.style.display = '';
-        info.className = 'alert alert-warning mt-2 py-2 mb-0';
-        info.innerHTML = '<i class="bi bi-patch-check"></i> Mode <strong>Gambar + Barcode</strong>: Keduanya tampil di PDF.';
     }
 }
 

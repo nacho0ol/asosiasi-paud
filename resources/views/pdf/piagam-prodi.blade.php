@@ -19,16 +19,15 @@ body { font-family: 'Times New Roman', serif; background: white; }
 .berlaku { font-size: 11px; color: #333; margin: 5px 0; }
 .tanggal { font-size: 11px; color: #555; margin-top: 10px; }
 
-/* Layout Footer & Barcode CSS */
+/* Layout Footer Baru */
 .footer-area { margin-top: 40px; width: 100%; }
 .barcode-col { float: left; width: 40%; text-align: left; padding-left: 20px; padding-top: 10px; }
 .ttd-col { float: right; width: 40%; text-align: center; padding-right: 20px; }
 .clearfix { clear: both; }
 
-/* Styling khusus biar Barcode HTML mekar & kelihatan */
-.qr-dokumen-box { display: inline-block; border: 2px solid #8B6914; padding: 6px; background: white; }
+/* CSS PENYELAMAT BARCODE (Wajib ada biar Barcodenya mekar) */
 table.qr-html { border-collapse: collapse; margin: 0; }
-table.qr-html td { width: 3.5px !important; height: 3.5px !important; padding: 0 !important; border: none !important; }
+table.qr-html td { width: 3px !important; height: 3px !important; padding: 0 !important; border: none !important; }
 </style>
 </head>
 <body>
@@ -57,7 +56,7 @@ table.qr-html td { width: 3.5px !important; height: 3.5px !important; padding: 0
 
         <div class="footer-area">
             <div class="barcode-col">
-                <div class="qr-dokumen-box">
+                <div style="display: inline-block; border: 2px solid #8B6914; padding: 4px; background: white; width: 75px; height: 75px;">
                     {!! $qrDokumen !!}
                 </div>
                 <div style="font-size: 10px; color: #555; margin-top: 4px; font-weight: bold; margin-left: 2px;">
@@ -68,23 +67,23 @@ table.qr-html td { width: 3.5px !important; height: 3.5px !important; padding: 0
             <div class="ttd-col">
                 <div style="font-size: 12px; margin-bottom: 5px; font-weight: bold;">Ketua Umum</div>
 
-                {{-- JURUS PAMUNGKAS DOMPDF: LAYERING POSITION ABSOLUTE --}}
-                <div style="position: relative; height: 110px; margin-bottom: 5px;">
-                    
-                    {{-- LAYER 1: CAP (di belakang) --}}
+                <div style="position: relative; height: 90px; width: 160px; margin: 0 auto;">
+                    {{-- 1. Kondisi Mode Gambar/Keduanya: Munculkan Cap --}}
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center; z-index: 1;">
-                        <img src="{{ $imgs['cap'] }}" style="height: 95px; opacity: 0.65;">
-                    </div>
+                        <img src="{{ $imgs['cap'] }}" style="position: absolute; top: 0px; left: 30px; height: 85px; opacity: 0.6; z-index: 1;">
                     @endif
 
-                    {{-- LAYER 2: TTD (di depan, agak diturunin dikit biar pas nebas tengah cap) --}}
+                    {{-- 2. Kondisi Mode Gambar/Keduanya: Munculkan TTD --}}
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
-                    <div style="position: absolute; top: 25px; left: 0; width: 100%; text-align: center; z-index: 2;">
-                        <img src="{{ $imgs['ttd_ketua'] }}" style="height: 75px;">
-                    </div>
+                        <img src="{{ $imgs['ttd_ketua'] }}" style="position: absolute; top: 15px; left: 0px; height: 60px; z-index: 2;">
                     @endif
 
+                    {{-- 3. KONDISI BARU (YANG TADI KELUPAAN): Munculkan Barcode TTD! --}}
+                    @if(in_array($modeTtd, ['qr','keduanya']) && !empty($qrKetua))
+                        <div style="position: absolute; top: 5px; left: 45px; z-index: 3; background: white; padding: 4px; border: 1px dashed #aaa; width: 65px; height: 65px;">
+                            {!! $qrKetua !!}
+                        </div>
+                    @endif
                 </div>
 
                 <div style="border-top: 1px solid #333; font-weight: bold; font-size: 12px; padding-top: 3px; display: inline-block; min-width: 150px;">

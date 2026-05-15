@@ -63,7 +63,7 @@ table.detail td:first-child { background: #f4f6f9; font-weight: bold; width: 35%
 
     @php $modeTtd = $setting->mode_ttd ?? 'gambar'; @endphp
 
-    <table width="100%" style="margin-top: 10px; border-collapse: collapse;">
+    <!-- <table width="100%" style="margin-top: 10px; border-collapse: collapse;">
         <tr>
             <td width="60%" style="border: none;"></td>
             <td width="40%" style="border: none; text-align: center; vertical-align: top;">
@@ -83,6 +83,50 @@ table.detail td:first-child { background: #f4f6f9; font-weight: bold; width: 35%
                                     transform: translateX(-50%);
                                     width: 80px; height: 42px;
                                     object-fit: contain;">
+                    @endif
+                </div>
+
+                <div style="border-top: 1px solid #333; font-weight: bold; font-size: 11px; padding-top: 3px; display: inline-block; min-width: 140px;">
+                    {{ $setting->nama_bendahara ?? 'Bendahara' }}
+                </div>
+            </td>
+        </tr>
+    </table> -->
+
+    <table width="100%" style="margin-top: 10px; border-collapse: collapse;">
+        <tr>
+            <td width="60%" style="border: none; vertical-align: top;">
+                 <div style="font-size: 9px; color: #888; margin-bottom: 2px;">Verifikasi Dokumen:</div>
+                 <div style="display: inline-block; padding: 2px; border: 1px solid #ddd; background: white;">
+                     {!! $qrDokumen !!}
+                 </div>
+                 @if($pembayaran->hash_dokumen)
+                     <div style="font-size: 7px; color: #aaa; margin-top: 2px; font-family: monospace;">{{ substr($pembayaran->hash_dokumen, 0, 15) }}...</div>
+                 @endif
+            </td>
+            
+            <td width="40%" style="border: none; text-align: center; vertical-align: top;">
+                <div style="font-size:10px; color:#666; margin-bottom:2px;">Penerima,</div>
+                <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">Bendahara</div>
+
+                <div style="position: relative; width: 130px; height: 70px; margin: 0 auto 6px auto;">
+                    {{-- LAYER 1: Cap --}}
+                    @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
+                        <img src="{{ $imgs['cap'] }}" 
+                             style="position: absolute; top: 0; left: 0; width: 130px; height: 70px; object-fit: contain; opacity: 0.5; z-index: 1;">
+                    @endif
+                    
+                    {{-- LAYER 2: TTD Bendahara --}}
+                    @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_bendahara']))
+                        <img src="{{ $imgs['ttd_bendahara'] }}" 
+                             style="position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 80px; height: 42px; object-fit: contain; z-index: 2;">
+                    @endif
+                    
+                    {{-- LAYER 3: QR Bendahara (Jika mode barcode aktif) --}}
+                    @if(in_array($modeTtd, ['qr','keduanya']) && !empty($qrBendahara))
+                        <div style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 3; background: white; padding: 3px; border: 1px dashed #aaa;">
+                            {!! $qrBendahara !!}
+                        </div>
                     @endif
                 </div>
 

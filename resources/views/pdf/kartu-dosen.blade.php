@@ -117,7 +117,7 @@ body { font-family: Arial, sans-serif; background: white; }
                 <div class="ttd-box" style="display: inline-block; width: 50mm; text-align: center;">
                     
                     {{-- WADAH TTD & CAP OVERLAP DOMPDF --}}
-                    <div style="height: 100px; text-align: center; margin-bottom: 5px;">
+                    <!-- <div style="height: 100px; text-align: center; margin-bottom: 5px;">
                         
                         {{-- 1. CAP DIMUNCULKAN DULU (Background), UKURAN JUMBO --}}
                         @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
@@ -129,10 +129,35 @@ body { font-family: Arial, sans-serif; background: white; }
                         <img src="{{ $imgs['ttd_ketua'] }}" style="height: 75px; display: block; margin: -80px auto 0 auto;">
                         @endif
 
+                    </div> -->
+
+                    {{-- WADAH TTD & CAP OVERLAP DOMPDF DENGAN JURUS ABSOLUTE --}}
+                    <div style="position: relative; height: 110px; width: 100%; margin-bottom: 5px;">
+                        
+                        {{-- LAYER 1: CAP DIMUNCULKAN DULU (Background) --}}
+                        @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; text-align: center; z-index: 1;">
+                            <img src="{{ $imgs['cap'] }}" style="height: 95px; opacity: 0.65;">
+                        </div>
+                        @endif
+
+                        {{-- LAYER 2: TTD DI DEPAN, TURUN DIKIT --}}
+                        @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
+                        <div style="position: absolute; top: 25px; left: 0; width: 100%; text-align: center; z-index: 2;">
+                            <img src="{{ $imgs['ttd_ketua'] }}" style="height: 75px;">
+                        </div>
+                        @endif
+
                     </div>
 
-                    @if(in_array($modeTtd, ['qr','keduanya']) && $qrKetua)
+                    <!-- @if(in_array($modeTtd, ['qr','keduanya']) && $qrKetua)
                     <div class="qr-ttd" style="margin-top: 5px;">{!! $qrKetua !!}<div class="lbl">TTD Digital Ketua</div></div>
+                    @endif -->
+                    @if(in_array($modeTtd, ['qr','keduanya']) && $qrKetua)
+                    <div class="qr-ttd" style="margin-top: 5px; width: 50px; margin-left: auto; margin-right: auto;">
+                        {!! $qrKetua !!}
+                        <div class="lbl">TTD Digital Ketua</div>
+                    </div>
                     @endif
                     
                     <div class="garis" style="margin-top: 5px;">{{ $setting->nama_ketua ?? 'Ketua Umum' }}</div>
