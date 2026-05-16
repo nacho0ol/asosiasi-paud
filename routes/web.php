@@ -18,6 +18,12 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['register' => false]);
 
+// Route untuk proses bayar dan nampilin pop-up Midtrans
+Route::get('/pembayaran/bayar/{id}', [PembayaranController::class, 'bayar'])->name('pembayaran.bayar');
+
+// Route khusus untuk menerima laporan otomatis dari Midtrans (Webhook)
+Route::post('/pembayaran/callback', [PembayaranController::class, 'callback'])->name('pembayaran.callback');
+
 // Verifikasi dokumen (publik, tanpa login)
 Route::get('/verifikasi/{tipe}/{kode}', [VerifikasiController::class, 'show'])->name('verifikasi');
 // backward compat

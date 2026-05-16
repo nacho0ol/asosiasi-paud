@@ -8,6 +8,8 @@ use App\Models\Pembayaran;
 use App\Models\Setting;
 use App\Models\Tagihan;
 use Illuminate\Http\Request;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class PembayaranController extends Controller
 {
@@ -99,5 +101,95 @@ class PembayaranController extends Controller
     {
         $pembayaran->delete();
         return redirect()->route('pembayaran.index')->with('success', 'Pembayaran berhasil dihapus.');
+    }
+
+    // ==========================================
+    // FITUR MIDTRANS MULAI DARI SINI
+    // ==========================================
+
+    public function bayar($id)
+    {
+        // Cari tagihan yang mau dibayar
+        $tagihan = Tagihan::findOrFail($id);
+
+        // Setup konfigurasi Midtrans
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        // Bikin Order ID unik biar Midtrans nggak error kalau di-refresh
+        $orderId = $tagihan->no_tagihan . '-' . time();
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $orderId,
+                'gross_amount' => (int) $tagihan->jumlah,
+            ),
+            'customer_details' => array(
+                'first_name' => 'Member',
+                'last_name' => 'Asosiasi PAUD',
+            ),
+        );
+
+        // Generate Token Snap
+        $snapToken = Snap::getSnapToken($params);
+
+        return view('pembayaran.bayar', compact('tagihan', 'snapToken'));
+    }
+
+    public function callback(Request $request)
+    {
+        $serverKey = env('MIDTRANS_SERVER_KEY');
+        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+
+        if ($hashed == $request->signature_key) {
+            if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+
+                // Ekstrak no_tagihan asli (buang timestamp di belakangnya)
+                $parts = explode('-', $request->order_id);
+                array_pop($parts); 
+                $noTagihan = implode('-', $parts);
+
+                // Cari tagihan
+                $tagihan = Tagihan::where('no_tagihan', $noTagihan)->first();
+
+                if ($tagihan && $tagihan->status != 'lunas') {
+                    
+                    // 1. Catat Kuitansi Pembayaran Otomatis
+                    $noKwitansi = 'KWT-' . date('Ymd') . '-' . str_pad(Pembayaran::count() + 1, 4, '0', STR_PAD_LEFT);
+                    $pembayaran = Pembayaran::create([
+                        'no_kwitansi' => $noKwitansi,
+                        'jenis' => $tagihan->jenis,
+                        'ref_id' => $tagihan->ref_id,
+                        'jumlah' => $tagihan->jumlah,
+                        'tanggal_bayar' => now(),
+                        'metode' => 'midtrans',
+                        'keterangan' => 'Auto-Payment via Midtrans (' . $request->payment_type . ')',
+                    ]);
+
+                    // 2. Ubah Status Tagihan Jadi Lunas
+                    $tagihan->update([
+                        'status' => 'lunas',
+                        'pembayaran_id' => $pembayaran->id
+                    ]);
+
+                    // 3. AKTIFKAN MEMBER & PERPANJANG MASA BERLAKU
+                    if ($tagihan->jenis == 'dosen') {
+                        $member = MemberDosen::find($tagihan->ref_id);
+                    } else {
+                        $member = MemberProdi::find($tagihan->ref_id);
+                    }
+
+                    if ($member) {
+                        $member->status = 'aktif';
+                        $member->tanggal_mulai = now();
+                        $member->tanggal_berakhir = now()->addYear();
+                        $member->save();
+                    }
+                }
+            }
+        }
+        return response()->json(['message' => 'Callback diterima mantap!']);
     }
 }
