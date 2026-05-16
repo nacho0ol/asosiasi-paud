@@ -5,8 +5,11 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Times New Roman', serif; background: white; }
-.piagam { width: 100%; min-height: 190mm; border: 8px double #8B6914; padding: 20px; text-align: center; }
+
+/* HAPUS width: 100% BIAR BORDER KIRI NGGAK KEPOTONG DOMPDF */
+.piagam { min-height: 190mm; border: 8px double #8B6914; padding: 20px; text-align: center; }
 .inner { border: 2px solid #8B6914; padding: 20px; min-height: 170mm; position: relative; }
+
 .logo { height: 70px; margin-bottom: 10px; background: white; border-radius: 6px; padding: 4px 10px; object-fit: contain; }
 .org-name { font-size: 18px; font-weight: bold; color: #1a3c5e; text-transform: uppercase; letter-spacing: 2px; }
 .org-sub { font-size: 12px; color: #555; margin-bottom: 15px; }
@@ -19,13 +22,13 @@ body { font-family: 'Times New Roman', serif; background: white; }
 .berlaku { font-size: 11px; color: #333; margin: 5px 0; }
 .tanggal { font-size: 11px; color: #555; margin-top: 10px; }
 
-/* Layout Footer Baru */
+/* LAYOUT FOOTER - PAKE UKURAN FIX BIAR TTD NGGAK TERBANG */
 .footer-area { margin-top: 40px; width: 100%; }
 .barcode-col { float: left; width: 40%; text-align: left; padding-left: 20px; padding-top: 10px; }
-.ttd-col { float: right; width: 40%; text-align: center; padding-right: 20px; }
+.ttd-col { float: right; width: 250px; text-align: center; padding-right: 30px; }
 .clearfix { clear: both; }
 
-/* CSS PENYELAMAT BARCODE (Wajib ada biar Barcodenya mekar) */
+/* CSS PENYELAMAT BARCODE */
 table.qr-html { border-collapse: collapse; margin: 0; }
 table.qr-html td { width: 3px !important; height: 3px !important; padding: 0 !important; border: none !important; }
 </style>
@@ -67,23 +70,23 @@ table.qr-html td { width: 3px !important; height: 3px !important; padding: 0 !im
             <div class="ttd-col">
                 <div style="font-size: 12px; margin-bottom: 5px; font-weight: bold;">Ketua Umum</div>
 
-                <div style="position: relative; height: 90px; width: 160px; margin: 0 auto;">
-                    {{-- 1. Kondisi Mode Gambar/Keduanya: Munculkan Cap --}}
+                {{-- WADAH TTD DIKUNCI MATI (150px) BIAR ABSOLUTE NYA PAS DI TENGAH --}}
+                <div style="position: relative; height: 90px; width: 150px; margin: 0 auto;">
+                    
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['cap']))
                         <img src="{{ $imgs['cap'] }}" style="position: absolute; top: 0px; left: 30px; height: 85px; opacity: 0.6; z-index: 1;">
                     @endif
 
-                    {{-- 2. Kondisi Mode Gambar/Keduanya: Munculkan TTD --}}
                     @if(in_array($modeTtd, ['gambar','keduanya']) && !empty($imgs['ttd_ketua']))
-                        <img src="{{ $imgs['ttd_ketua'] }}" style="position: absolute; top: 15px; left: 0px; height: 60px; z-index: 2;">
+                        <img src="{{ $imgs['ttd_ketua'] }}" style="position: absolute; top: 15px; left: 35px; height: 60px; z-index: 2;">
                     @endif
 
-                    {{-- 3. KONDISI BARU (YANG TADI KELUPAAN): Munculkan Barcode TTD! --}}
                     @if(in_array($modeTtd, ['qr','keduanya']) && !empty($qrKetua))
-                        <div style="position: absolute; top: 5px; left: 45px; z-index: 3; background: white; padding: 4px; border: 1px dashed #aaa; width: 65px; height: 65px;">
+                        <div style="position: absolute; top: 5px; left: 40px; z-index: 3; background: white; padding: 4px; border: 1px dashed #aaa; width: 65px; height: 65px;">
                             {!! $qrKetua !!}
                         </div>
                     @endif
+
                 </div>
 
                 <div style="border-top: 1px solid #333; font-weight: bold; font-size: 12px; padding-top: 3px; display: inline-block; min-width: 150px;">

@@ -7,8 +7,8 @@
 @page { margin: 15px; }
 body { font-family: Arial, sans-serif; font-size: 12px; }
 
-.kwitansi { width: 100%; border: 2px solid #1a3c5e; padding: 12px; }
-
+//.kwitansi { width: 100%; border: 2px solid #1a3c5e; padding: 12px; }
+.kwitansi { border: 2px solid #1a3c5e; padding: 12px; margin: 0; }
 .header { display: flex; align-items: center; border-bottom: 2px solid #1a3c5e; padding-bottom: 8px; margin-bottom: 8px; }
 .header img { height: 50px; margin-right: 12px; }
 .header-text .org { font-size: 15px; font-weight: bold; color: #1a3c5e; }
