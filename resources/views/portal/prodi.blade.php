@@ -37,6 +37,11 @@
         {{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
+        {{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
     <div class="row g-4">
         <div class="col-md-4">
@@ -99,13 +104,19 @@
                         <div class="fs-5 fw-bold">{{ $member->tanggal_berakhir->format('d/m/Y') }}</div>
                     </div>
                 </div>
-                @if($member->status === 'aktif')
-                <div class="mt-3">
+                
+                <div class="mt-3 d-flex gap-2">
+                    @if($member->status === 'aktif')
                     <a href="{{ route('portal.prodi.piagam') }}" class="btn btn-light" target="_blank">
                         <i class="bi bi-file-earmark-pdf"></i> Cetak Piagam
                     </a>
+                    @endif
+                    
+                    {{-- TOMBOL SAKTI PERPANJANG MIDTRANS UNTUK LEVEL PRODI --}}
+                    <a href="{{ route('portal-prodi.perpanjang') }}" class="btn btn-warning fw-bold text-dark shadow-sm">
+                        <i class="bi bi-credit-card-fill"></i> Perpanjang via Midtrans
+                    </a>
                 </div>
-                @endif
             </div>
 
             {{-- Tagihan --}}
@@ -118,8 +129,8 @@
                     @endif
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light"><tr><th>No Tagihan</th><th>Keterangan</th><th>Jumlah</th><th>Jatuh Tempo</th><th>Status</th></tr></thead>
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead class="table-light"><tr><th>No Tagihan</th><th>Keterangan</th><th>Jumlah</th><th>Jatuh Tempo</th><th>Status / Aksi</th></tr></thead>
                         <tbody>
                         @foreach($tagihans as $t)
                         <tr>
@@ -134,9 +145,13 @@
                             </td>
                             <td>
                                 @if($t->status === 'lunas')
-                                <span class="badge bg-success">Lunas</span>
+                                    <span class="badge bg-success">Lunas</span>
                                 @else
-                                <span class="badge bg-warning text-dark">Belum Bayar</span>
+                                    {{-- TOMBOL BAYAR MIDTRANS DI TABEL PRODI --}}
+                                    <span class="badge bg-warning text-dark mb-1 d-block" style="width: fit-content;">Belum Bayar</span>
+                                    <a href="{{ route('pembayaran.bayar', $t->id) }}" class="btn btn-sm btn-primary" style="font-size: 0.75rem;">
+                                        💳 Bayar Midtrans
+                                    </a>
                                 @endif
                             </td>
                         </tr>
@@ -145,9 +160,9 @@
                     </table>
                 </div>
                 @if($tagihans->where('status','belum_bayar')->count() > 0)
-                <div class="card-footer bg-warning bg-opacity-10">
-                    <i class="bi bi-info-circle text-warning"></i>
-                    <small>Silakan lakukan pembayaran dan konfirmasi ke sekretariat asosiasi. Piagam aktif setelah pembayaran dikonfirmasi admin.</small>
+                <div class="card-footer bg-primary bg-opacity-10">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <small>Silakan klik tombol <b>Bayar Midtrans</b> pada tabel di atas. Pembayaran menggunakan QRIS/Transfer Bank akan langsung mengaktifkan piagam secara otomatis.</small>
                 </div>
                 @endif
             </div>
@@ -179,7 +194,7 @@
                 </div>
             </div>
 
-            {{-- TAMBAHAN BARU: Tabel Daftar Dosen --}}
+            {{-- Tabel Daftar Dosen --}}
             <div class="card mt-4">
                 <div class="card-header d-flex justify-content-between align-items-center bg-white">
                     <span><i class="bi bi-people text-primary"></i> Daftar Dosen Anggota</span>

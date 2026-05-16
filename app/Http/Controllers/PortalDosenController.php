@@ -56,4 +56,38 @@ class PortalDosenController extends Controller
 
         return redirect()->route('portal.index')->with('success', 'Profil berhasil diperbarui.');
     }
+    // ==========================================
+    // FUNGSI AUTO-TAGIHAN MIDTRANS KHUSUS PRODI
+    // ==========================================
+    public function perpanjang()
+    {
+        $user  = auth()->user();
+        $prodi = $user->prodi;
+
+        if (!$prodi) {
+            return back()->with('error', 'Data prodi tidak valid.');
+        }
+
+        // 1. Cek apakah prodi ini udah punya tagihan yang belum dibayar?
+        $tagihan = Tagihan::where('jenis', 'prodi')
+                          ->where('ref_id', $prodi->id)
+                          ->where('status', 'belum_bayar')
+                          ->first();
+
+        // 2. Kalau belum ada, kita bikinin otomatis senilai Rp 500.000 (sesuai setting seeder)
+        if (!$tagihan) {
+            $tagihan = Tagihan::create([
+                'no_tagihan'  => 'INV-PRD-' . date('Ymd') . '-' . rand(1000, 9999),
+                'jenis'       => 'prodi',
+                'ref_id'      => $prodi->id,
+                'jumlah'      => 500000, // Iuran prodi 500rb sesuai DemoSeeder
+                'status'      => 'belum_bayar',
+                'jatuh_tempo' => now()->addDays(7),
+                'keterangan'  => 'Perpanjangan Keanggotaan Prodi (Auto)'
+            ]);
+        }
+
+        // 3. Lempar langsung ke halaman kasir Midtrans yang sama!
+        return redirect()->route('pembayaran.bayar', $tagihan->id);
+    }
 }

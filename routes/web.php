@@ -24,6 +24,8 @@ Route::get('/pembayaran/bayar/{id}', [PembayaranController::class, 'bayar'])->na
 // Route khusus untuk menerima laporan otomatis dari Midtrans (Webhook)
 Route::post('/pembayaran/callback', [PembayaranController::class, 'callback'])->name('pembayaran.callback');
 
+Route::get('/portal/perpanjang', [\App\Http\Controllers\PortalDosenController::class, 'perpanjang'])->name('portal.perpanjang');
+Route::get('/portal-prodi/perpanjang', [\App\Http\Controllers\PortalProdiController::class, 'perpanjang'])->name('portal-prodi.perpanjang');
 // Verifikasi dokumen (publik, tanpa login)
 Route::get('/verifikasi/{tipe}/{kode}', [VerifikasiController::class, 'show'])->name('verifikasi');
 // backward compat

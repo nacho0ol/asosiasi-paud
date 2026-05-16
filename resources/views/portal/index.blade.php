@@ -38,6 +38,11 @@
         {{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
+        {{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
     <div class="row g-4">
         <div class="col-md-4">
@@ -113,11 +118,19 @@
                 <div class="mt-3">
                     @if($member->status === 'aktif')
                         @php $sisaHari = now()->diffInDays($member->tanggal_berakhir, false); @endphp
+                        
+                        {{-- KOTAK KUNING YANG UDAH DI-UPGRADE PAKAI MIDTRANS --}}
                         @if($sisaHari <= 30 && $sisaHari >= 0)
-                        <div class="alert alert-warning py-2 mb-2">
-                            <i class="bi bi-exclamation-triangle"></i> Masa berlaku tinggal <strong>{{ $sisaHari }} hari</strong>. Segera hubungi admin untuk perpanjangan.
+                        <div class="alert alert-warning py-2 mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-exclamation-triangle"></i> Masa berlaku tinggal <strong>{{ $sisaHari }} hari</strong>.
+                            </div>
+                            <a href="{{ route('portal.perpanjang') }}" class="btn btn-sm btn-success fw-bold shadow-sm">
+                                💳 Perpanjang via Midtrans
+                            </a>
                         </div>
                         @endif
+                        
                         <a href="{{ route('portal.kartu') }}" class="btn btn-light" target="_blank">
                             <i class="bi bi-credit-card"></i> Cetak Kartu Member
                         </a>
@@ -137,8 +150,8 @@
                     @endif
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light"><tr><th>No Tagihan</th><th>Keterangan</th><th>Jumlah</th><th>Jatuh Tempo</th><th>Status</th></tr></thead>
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead class="table-light"><tr><th>No Tagihan</th><th>Keterangan</th><th>Jumlah</th><th>Jatuh Tempo</th><th>Status / Aksi</th></tr></thead>
                         <tbody>
                         @foreach($tagihans as $t)
                         <tr>
@@ -153,9 +166,13 @@
                             </td>
                             <td>
                                 @if($t->status === 'lunas')
-                                <span class="badge bg-success">Lunas</span>
+                                    <span class="badge bg-success">Lunas</span>
                                 @else
-                                <span class="badge bg-warning text-dark">Belum Bayar</span>
+                                    {{-- TOMBOL MIDTRANS DI DALAM TABEL TAGIHAN --}}
+                                    <span class="badge bg-warning text-dark mb-1 d-block" style="width: fit-content;">Belum Bayar</span>
+                                    <a href="{{ route('pembayaran.bayar', $t->id) }}" class="btn btn-sm btn-primary" style="font-size: 0.75rem;">
+                                        💳 Bayar Midtrans
+                                    </a>
                                 @endif
                             </td>
                         </tr>
@@ -164,9 +181,9 @@
                     </table>
                 </div>
                 @if($tagihans->where('status','belum_bayar')->count() > 0)
-                <div class="card-footer bg-warning bg-opacity-10">
-                    <i class="bi bi-info-circle text-warning"></i>
-                    <small>Silakan lakukan pembayaran dan konfirmasi ke sekretariat asosiasi. Kartu member aktif setelah pembayaran dikonfirmasi admin.</small>
+                <div class="card-footer bg-primary bg-opacity-10">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <small>Silakan klik tombol <b>Bayar Midtrans</b> pada tagihan Anda. Pembayaran akan terkonfirmasi dan masa aktif akan bertambah secara otomatis.</small>
                 </div>
                 @endif
             </div>
